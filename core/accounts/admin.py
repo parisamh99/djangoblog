@@ -4,8 +4,8 @@ from .models import User,Profile
 # Register your models here.
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ('email','is_superuser','is_active')
-    list_filter = ('email','is_superuser','is_active')
+    list_display = ('email','is_superuser','is_active','is_verified')
+    list_filter = ('email','is_superuser','is_active','is_verified')
     search_fields = ('email',)
     ordering = ('email',)
     #fieldsets show us what fields we see in any of users in admin section
@@ -17,7 +17,7 @@ class CustomUserAdmin(UserAdmin):
         }),
         ('permissions',{
             "fields": (
-                'is_staff','is_active','is_superuser'
+                'is_staff','is_active','is_superuser','is_verified'
             ),
         }),
         ('permissions_group',{
@@ -34,7 +34,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None,{
             "fields": (
-                'email','password1','password2','is_staff','is_active','is_superuser'
+                'email','password1','password2','is_staff','is_active','is_superuser','is_verified'
             ),
         }),
     )
