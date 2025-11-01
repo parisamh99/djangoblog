@@ -1,29 +1,32 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     UpdateView,
-    FormView,
     DeleteView,
 )
 from .models import Post
 from .forms import PostForm
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
 from django.http import HttpResponse
+from django.shortcuts  import render
 
 
 # fbv for templateview
-'''
-def indexView(request):
+
+def indexview(request):
     """
     a function based view to show index page
     """
     name = 'paisa'
     context = {'name':name}
-    return render (request,'blog/index.html',context)
-'''
+    return render (request,'index.html',context)
+
 
 
 class IndexView(TemplateView):
@@ -59,9 +62,7 @@ class Redirecttomaktab(RedirectView):
 class PostListView(LoginRequiredMixin, ListView):
     # model = Post (
     queryset = Post.objects.all()
-    context_object_name = (
-        "posts"  # this converts(object_list in templates) to what name we want
-    )
+    context_object_name = "posts"  # this converts(object_list in templates) to what name we want
     paginate_by = 2
     ordering = "-id"
     # def get_queryset(self): #its work just like model and queryset. its for getting data
@@ -69,7 +70,7 @@ class PostListView(LoginRequiredMixin, ListView):
     #     return posts
 
 
-class PostDetailView(LoginRequiredMixin, DetailView):
+class PostDetailView(LoginRequiredMixin,DetailView):
     model = Post
 
 
@@ -87,7 +88,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     # fields = ['title','content','category','status','published_date','author']
     success_url = "/blog/post/"
-    form_class = PostForm  # we can use formclass instead of fields and vise versa
+    form_class = (
+        PostForm  # we can use formclass instead of fields and vise versa
+    )
 
     def form_valid(self, form):
         form.instance.author = self.request.user

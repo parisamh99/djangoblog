@@ -1,5 +1,8 @@
 # 📦 Import required modules
-from rest_framework import generics, status  # For generic views and HTTP status codes
+from rest_framework import (
+    generics,
+    status,
+)  # For generic views and HTTP status codes
 from .serializers import (
     RegistrationSerializer,
     CustomAuthTokenSerializer,
@@ -10,7 +13,9 @@ from .serializers import (
 )
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token  # Used to return API responses
+from rest_framework.authtoken.models import (
+    Token,
+)  # Used to return API responses
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -43,7 +48,10 @@ class RegistrationApiView(generics.GenericAPIView):
             user_obj = get_object_or_404(User, email=email)
             token = self.get_tokens_for_user(user_obj)
             email_obj = EmailMessage(
-                "email/activation.tpl", {"token": token}, "parisa@gmail.com", to=[email]
+                "email/activation.tpl",
+                {"token": token},
+                "parisa@gmail.com",
+                to=[email],
             )
             EmailThread(email_obj).start()
             return Response(data, status=status.HTTP_201_CREATED)
@@ -64,7 +72,9 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key, "user_id": user.pk, "email": user.email})
+        return Response(
+            {"token": token.key, "user_id": user.pk, "email": user.email}
+        )
 
 
 # for deleteing the token in conditions like leak out token or expired
@@ -94,7 +104,9 @@ class CustomChangePasswordView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             # Check old password
-            if not self.object.check_password(serializer.data.get("old_password")):
+            if not self.object.check_password(
+                serializer.data.get("old_password")
+            ):
                 return Response(
                     {"old_password": ["Wrong password."]},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -126,7 +138,10 @@ class EmailTestSend(APIView):
         user_obj = get_object_or_404(User, email=self.email)
         token = self.get_tokens_for_user(user_obj)
         email_obj = EmailMessage(
-            "email/hello.tpl", {"token": token}, "parisa@gmail.com", to=[self.email]
+            "email/hello.tpl",
+            {"token": token},
+            "parisa@gmail.com",
+            to=[self.email],
         )
         EmailThread(email_obj).start()
         return Response("email sent")
@@ -140,21 +155,27 @@ class ActivationApiView(APIView):
     def get(self, request, token, *args, **kwargs):
         # decode token -> user id
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            token = jwt.decode(
+                token, settings.SECRET_KEY, algorithms=["HS256"]
+            )
             user_id = token.get("user_id")
         except ExpiredSignatureError:
             return Response(
-                {"detail": "your token was expired"}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "your token was expired"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         except InvalidSignatureError:
             return Response(
-                {"detail": "your token was wrong"}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "your token was wrong"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         # find object user
         user_obj = get_object_or_404(User, pk=user_id)
 
         if user_obj.is_verified:
-            return Response({"details": "your account already has been verified"})
+            return Response(
+                {"details": "your account already has been verified"}
+            )
 
         # is-verified(false) -> true
         user_obj.is_verified = True
@@ -162,7 +183,9 @@ class ActivationApiView(APIView):
         # if token not valid ?
         # if token valid response ok
         return Response(
-            {"detail": "your account have been verified and activated successfully"}
+            {
+                "detail": "your account have been verified and activated successfully"
+            }
         )
 
 
@@ -187,7 +210,8 @@ class ResendActivationApiView(generics.GenericAPIView):
             )
         else:
             return Response(
-                {"details": "request failed"}, status=status.HTTP_400_BAD_REQUEST
+                {"details": "request failed"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     def get_tokens_for_user(self, user):

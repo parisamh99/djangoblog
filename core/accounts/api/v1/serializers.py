@@ -1,6 +1,8 @@
 # 📦 Import required modules
 from django.core import exceptions  # Used to catch Django's validation errors
-from rest_framework import serializers  # Base serializers from Django REST Framework
+from rest_framework import (
+    serializers,
+)  # Base serializers from Django REST Framework
 from accounts.models import User, Profile
 from django.contrib.auth.password_validation import (
     validate_password,
@@ -62,7 +64,9 @@ class CustomAuthTokenSerializer(serializers.Serializer):
     # Password field with masked input
     password = serializers.CharField(
         label=_("Password"),
-        style={"input_type": "password"},  # makes it render as a password field
+        style={
+            "input_type": "password"
+        },  # makes it render as a password field
         trim_whitespace=False,  # don't strip spaces from input
         write_only=True,  # not returned in responses
     )
@@ -94,7 +98,9 @@ class CustomAuthTokenSerializer(serializers.Serializer):
                 raise serializers.ValidationError(msg, code="authorization")
 
             if not user.is_verified:
-                raise serializers.ValidationError({"details": "user doesnt verified"})
+                raise serializers.ValidationError(
+                    {"details": "user doesnt verified"}
+                )
 
         else:
             # If either email or password is missing
@@ -112,7 +118,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # the normal authentication and token generation.
         validated_data = super().validate(attrs)
         if not self.user.is_verified:
-            raise serializers.ValidationError({"details": "user doesnt verified"})
+            raise serializers.ValidationError(
+                {"details": "user doesnt verified"}
+            )
 
         # Add the user's email to the response data.
         validated_data["email"] = self.user.email
@@ -140,7 +148,9 @@ class CustomChangePassworSerializer(serializers.Serializer):
             validate_password(attrs.get("new_password"))
         except exceptions.ValidationError as e:
             # If validation fails, return a list of error messages
-            raise serializers.ValidationError({"new_password": list(e.messages)})
+            raise serializers.ValidationError(
+                {"new_password": list(e.messages)}
+            )
 
         # Return the validated data if everything is fine
         return attrs
@@ -151,7 +161,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ["id", "email", "first_name", "last_name", "image", "description"]
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "image",
+            "description",
+        ]
         read_only_fields = ["email"]
 
 
@@ -163,8 +180,12 @@ class ResendActivationSerializer(serializers.Serializer):
         try:
             user_obj = get_object_or_404(User, email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError({"details": "user doesnt exist"})
+            raise serializers.ValidationError(
+                {"details": "user doesnt exist"}
+            )
         if not user_obj.is_verified:
-            raise serializers.ValidationError({"details": "user doesnt verified"})
+            raise serializers.ValidationError(
+                {"details": "user doesnt verified"}
+            )
         attrs["user"] = user_obj
         return super().validate(attrs)

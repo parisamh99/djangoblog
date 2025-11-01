@@ -9,4 +9,8 @@ django-filter
 drf-yasg
 djangorestframework-simplejwt
 django-mail-templated
+black
+flake8
+pytest
+pytest-django
     
