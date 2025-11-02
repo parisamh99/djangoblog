@@ -60,6 +60,15 @@ class PostList(APIView):
           return Response(serializers.errors)
 '''
 
+class PostList(ListCreateAPIView):
+    """getting a list of post and creating a new post"""
+
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+
+
 
 # CREATE WITH apiview in function
 """
@@ -83,12 +92,7 @@ def postdetail(request,id):
 """
 
 
-class PostList(ListCreateAPIView):
-    """getting a list of post and creating a new post"""
 
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    serializer_class = PostSerializer
-    queryset = Post.objects.filter(status=True)
 
 
 '''
@@ -98,13 +102,13 @@ class PostDetail(APIView):
    serializer_class = PostSerializer
    def get(self,request,id):
       """ retriveing the post data """
-      post = post = get_object_or_404(Post,pk=id, status=True)
+      post = get_object_or_404(Post,pk=id, status=True)
       serializer =self.serializer_class(post)
       return Response(serializer.data)
    
    def put(self,request,id):
       """ editing the post data """
-      post = post = get_object_or_404(Post,pk=id, status=True)
+      post = get_object_or_404(Post,pk=id, status=True)
       serializer = self.serializer_class(post, request.data)
       if serializer.is_valid():
           serializer.save()
@@ -171,3 +175,4 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+

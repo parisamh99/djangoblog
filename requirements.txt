@@ -9,8 +9,10 @@ django-filter
 drf-yasg
 djangorestframework-simplejwt
 django-mail-templated
+djoser
 black
 flake8
 pytest
 pytest-django
+Faker
     
