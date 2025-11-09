@@ -69,6 +69,9 @@ class PostListView(LoginRequiredMixin, ListView):
     #     posts = Post.objects.filter(status=True)
     #     return posts
 
+#example
+
+    
 
 class PostDetailView(LoginRequiredMixin,DetailView):
     model = Post

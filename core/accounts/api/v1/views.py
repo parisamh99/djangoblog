@@ -11,6 +11,7 @@ from .serializers import (
     ProfileSerializer,
     ResendActivationSerializer,
 )
+
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import (
@@ -30,15 +31,12 @@ import jwt
 from django.conf import settings
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
 
-# from mail_templated import send_mail
+
 
 
 # 🔹 API view for handling user registration requests
 class RegistrationApiView(generics.GenericAPIView):
-    # Specify which serializer this view will use
     serializer_class = RegistrationSerializer
-
-    # Handle POST requests (e.g., when a user submits a registration form)
     def post(self, request, *args, **kwargs):
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,6 +51,7 @@ class RegistrationApiView(generics.GenericAPIView):
                 "parisa@gmail.com",
                 to=[email],
             )
+
             EmailThread(email_obj).start()
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -74,10 +73,8 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response(
             {"token": token.key, "user_id": user.pk, "email": user.email}
-        )
+        ) 
 
-
-# for deleteing the token in conditions like leak out token or expired
 class CustomDiscardAuthToken(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -153,7 +150,7 @@ class EmailTestSend(APIView):
 
 class ActivationApiView(APIView):
     def get(self, request, token, *args, **kwargs):
-        # decode token -> user id
+
         try:
             token = jwt.decode(
                 token, settings.SECRET_KEY, algorithms=["HS256"]
@@ -169,7 +166,7 @@ class ActivationApiView(APIView):
                 {"detail": "your token was wrong"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # find object user
+       
         user_obj = get_object_or_404(User, pk=user_id)
 
         if user_obj.is_verified:
